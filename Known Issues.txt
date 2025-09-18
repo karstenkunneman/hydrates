@@ -1,0 +1,4 @@
+1. No kappa1 correction factor for H2S
+2. Need ice-phase prediction constants for N2, CO2, and O2
+3. Need Henry's Law Parameters for C5H12 and C6H14
+4. Need binary interaction parameters as available
