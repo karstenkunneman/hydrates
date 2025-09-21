@@ -324,7 +324,7 @@ class KlaudaSandler2003:
             try:
                 if "I" in localPvapConsts[:,0]:
                     SIEqPressure = abs(scipy.optimize.fsolve(f_defT,pGuess,xtol=errorMargin,args=self.temperature)[0])
-                    SIEqFrac = hydrateFugacity(self.temperature, SIEqPressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, self.temperature, pGuess, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
+                    SIEqFrac = hydrateFugacity(self.temperature, SIEqPressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, self.temperature, SIEqPressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
                 else:
                     raise
             except:
@@ -335,7 +335,7 @@ class KlaudaSandler2003:
             try:
                 if "I" in localPvapConsts[:,0]:
                     SIEqTemperature = abs(scipy.optimize.fsolve(f_defP,tGuess,xtol=errorMargin,args=self.pressure)[0])
-                    SIEqFrac = hydrateFugacity(SIEqTemperature, self.pressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, tGuess, self.pressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
+                    SIEqFrac = hydrateFugacity(SIEqTemperature, self.pressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, SIEqTemperature, self.pressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
                 else:
                     raise
             except:
@@ -378,7 +378,7 @@ class KlaudaSandler2003:
             try:
                 if "II" in localPvapConsts[:,0]:
                     SIIEqPressure = abs(scipy.optimize.fsolve(f_defT,pGuess,xtol=errorMargin,args=self.temperature)[0])
-                    SIIEqFrac = hydrateFugacity(self.temperature, SIEqPressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, self.temperature, pGuess, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
+                    SIIEqFrac = hydrateFugacity(self.temperature, SIEqPressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, self.temperature, SIEqPressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
                 else:
                     raise
             except:
@@ -398,7 +398,7 @@ class KlaudaSandler2003:
             try:
                 if "II" in localPvapConsts[:,0]:
                     SIIEqTemperature = abs(scipy.optimize.fsolve(f_defP,tGuess,xtol=errorMargin,args=self.pressure)[0])
-                    SIIEqFrac = hydrateFugacity(SIEqTemperature, self.pressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, tGuess, self.pressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
+                    SIIEqFrac = hydrateFugacity(SIEqTemperature, self.pressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, SIEqTemperature, self.pressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
                 else:
                     raise
             except:
