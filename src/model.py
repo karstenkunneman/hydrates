@@ -20,9 +20,9 @@ def getHydrateCellProperties(structure):
     cellProperties = hydrateCellProperties[mask]
     return cellProperties
 
-def henrysLawConst(componentData, T):
-    constants = componentData[10:14]
-    H_i = 101325*math.exp(-1*(constants[0]/1.987 + constants[1]/T/1.987 + constants[2]*math.log(T)/1.987 + constants[3]*T/1.987))
+def henrysLawConst(compoundData, T):
+    constants = compoundData[10:14]
+    H_i = 101325*math.exp(-1*(constants[0] + constants[1]/T + constants[2]*math.log(T) + constants[3]*T))
     return H_i 
 
 def Z(compoundData, T, P):
@@ -58,74 +58,74 @@ def freezingPointDepression(compounds, T, fug_vap, compoundData, P, chemGroups):
     deltadT = R*(273.15)**2/6011*math.log(liqPhaseComposition(compounds, T, fug_vap, compoundData, P)[0]*activityCoeff(T, phaseComposition, chemGroups))
     return deltadT
 
-def Lang_Const(T, Ac, Bc, Dc):    
-    Cml = math.exp(Ac + Bc/T + Dc/T/T)
-    
-    return Cml
-
-def Lang_GG_Const(T, compoundData, fracs, structure):
-    try:
-        I = compoundData[:,7]#eV
-        alpha = compoundData[:,8]#angstrom^3
-    except:
-        I = [compoundData[0][7]]
-        alpha = [compoundData[0][8]]
-        
-    noComponents = len(I)    
-        
-    Cgg = [[1,1] for i in range(noComponents)]
-    
-    C6 = numpy.zeros((noComponents,noComponents))
-    C8 = numpy.zeros((noComponents,noComponents))
-    C10 = numpy.zeros((noComponents,noComponents))
-            
-    #Dispersion Coefficients for each guest-guest interaction
-    for i in range(noComponents):
-        for j in range(noComponents):
-            C6[i][j] = (3/2)*alpha[i]*alpha[j]*I[i]*I[j]/(I[i]+I[j])*23.05/.001987
-            C8[i][j] = 496778.3824*alpha[i]*alpha[j]*(I[i]/(2*I[i]+I[j])+I[j]/(2*I[j]+I[i]))
-            C10[i][j] = 13260598.42*alpha[i]*alpha[j]/(I[i]+I[j])
-    
-    wrgg = [[[[0,0],[0,0]] for i in range(noComponents)] for i in range(noComponents)]
-    
-    #Unsure exactly what these are relative to r, just dont touch it if you want to stay sane.
-    if structure == "I":
-        a_lc = 12.03
-        for i in range(noComponents):
-            for j in range(noComponents):
-                r0 = a_lc*0.86602
-                wrgg[i][j][0][0] = -1*C6[i][j]*12.25367/(r0**6)-C8[i][j]*10.3552/(r0**8)-C10[i][j]*9.5644/(r0**10)
-                r1 = a_lc*0.55901
-                wrgg[i][j][0][1] = -1*C6[i][j]*13.41525/(r1**6)-C8[i][j]*12.38994/(r1**8)-C10[i][j]*12.12665/(r1**10)
-                
-                r0 = a_lc*0.55901
-                wrgg[i][j][1][0] = -1*C6[i][j]*4.47175/(r0**6)-C8[i][j]*4.12998/(r0**8)-C10[i][j]*4.02482/(r0**10)
-                r1 = a_lc*0.5
-                wrgg[i][j][1][1] = -1*C6[i][j]*5.14048/(r1**6)-C8[i][j]*3.74916/(r1**8)-C10[i][j]*3.09581/(r1**10)
-    elif structure == "II":
-        a_lc = 17.31
-        for i in range(noComponents):
-            for j in range(noComponents):
-                r0 = a_lc*0.35355
-                wrgg[i][j][0][0] = -1*C6[i][j]*6.92768/(r0**6)-C8[i][j]*6.23392/(r0**8)-C10[i][j]*6.06724/(r0**10)
-                r1 = a_lc*0.41457
-                wrgg[i][j][0][1] = -1*C6[i][j]*6.91143/(r1**6)-C8[i][j]*6.28271/(r1**8)-C10[i][j]*6.10214/(r1**10)
-                
-                r0 = a_lc*0.41457
-                wrgg[i][j][1][0] = -1*C6[i][j]*13.82287/(r0**6)-C8[i][j]*12.56542/(r0**8)-C10[i][j]*12.20428/(r0**10)
-                r1 = a_lc*0.43301
-                wrgg[i][j][1][1] = -1*C6[i][j]*5.11677/(r1**6)-C8[i][j]*4.33181/(r1**8)-C10[i][j]*4.11102/(r1**10)
-    
-    #Obtain the interaction energy of guestz`
-    for i in range(noComponents):
-        for j in range(noComponents):
-            for k in range(2):
-                Cgg[i][k] *= math.exp(-1*(wrgg[i][j][k][0]*fracs[0][j])/T)*math.exp(-1*(wrgg[i][j][k][1]*fracs[1][j])/T)
-    
-    return Cgg
-
 #Calculates the fractional occupancy of small and large shells by each component
 def frac(T, vaporFugacities, compoundData, structure, compounds, Ac, Bc, Dc):
+    def Lang_Const(T, Ac, Bc, Dc):    
+        Cml = math.exp(Ac + Bc/T + Dc/T/T)
+        
+        return Cml
+
+    def Lang_GG_Const(T, compoundData, fracs, structure):
+        try:
+            I = compoundData[:,7]#eV
+            alpha = compoundData[:,8]#angstrom^3
+        except:
+            I = [compoundData[0][7]]
+            alpha = [compoundData[0][8]]
+            
+        noComponents = len(I)    
+            
+        Cgg = [[1,1] for i in range(noComponents)]
+        
+        C6 = numpy.zeros((noComponents,noComponents))
+        C8 = numpy.zeros((noComponents,noComponents))
+        C10 = numpy.zeros((noComponents,noComponents))
+                
+        #Dispersion Coefficients for each guest-guest interaction
+        for i in range(noComponents):
+            for j in range(noComponents):
+                C6[i][j] = (3/2)*alpha[i]*alpha[j]*I[i]*I[j]/(I[i]+I[j])*23.05/.001987
+                C8[i][j] = 496778.3824*alpha[i]*alpha[j]*(I[i]/(2*I[i]+I[j])+I[j]/(2*I[j]+I[i]))
+                C10[i][j] = 13260598.42*alpha[i]*alpha[j]/(I[i]+I[j])
+        
+        wrgg = [[[[0,0],[0,0]] for i in range(noComponents)] for i in range(noComponents)]
+        
+        #Unsure exactly what these are relative to r, just dont touch it if you want to stay sane.
+        if structure == "I":
+            a_lc = 12.03
+            for i in range(noComponents):
+                for j in range(noComponents):
+                    r0 = a_lc*0.86602
+                    wrgg[i][j][0][0] = -1*C6[i][j]*12.25367/(r0**6)-C8[i][j]*10.3552/(r0**8)-C10[i][j]*9.5644/(r0**10)
+                    r1 = a_lc*0.55901
+                    wrgg[i][j][0][1] = -1*C6[i][j]*13.41525/(r1**6)-C8[i][j]*12.38994/(r1**8)-C10[i][j]*12.12665/(r1**10)
+                    
+                    r0 = a_lc*0.55901
+                    wrgg[i][j][1][0] = -1*C6[i][j]*4.47175/(r0**6)-C8[i][j]*4.12998/(r0**8)-C10[i][j]*4.02482/(r0**10)
+                    r1 = a_lc*0.5
+                    wrgg[i][j][1][1] = -1*C6[i][j]*5.14048/(r1**6)-C8[i][j]*3.74916/(r1**8)-C10[i][j]*3.09581/(r1**10)
+        elif structure == "II":
+            a_lc = 17.31
+            for i in range(noComponents):
+                for j in range(noComponents):
+                    r0 = a_lc*0.35355
+                    wrgg[i][j][0][0] = -1*C6[i][j]*6.92768/(r0**6)-C8[i][j]*6.23392/(r0**8)-C10[i][j]*6.06724/(r0**10)
+                    r1 = a_lc*0.41457
+                    wrgg[i][j][0][1] = -1*C6[i][j]*6.91143/(r1**6)-C8[i][j]*6.28271/(r1**8)-C10[i][j]*6.10214/(r1**10)
+                    
+                    r0 = a_lc*0.41457
+                    wrgg[i][j][1][0] = -1*C6[i][j]*13.82287/(r0**6)-C8[i][j]*12.56542/(r0**8)-C10[i][j]*12.20428/(r0**10)
+                    r1 = a_lc*0.43301
+                    wrgg[i][j][1][1] = -1*C6[i][j]*5.11677/(r1**6)-C8[i][j]*4.33181/(r1**8)-C10[i][j]*4.11102/(r1**10)
+        
+        #Obtain the interaction energy of guests
+        for i in range(noComponents):
+            for j in range(noComponents):
+                for k in range(2):
+                    Cgg[i][k] *= math.exp(-1*(wrgg[i][j][k][0]*fracs[0][j])/T)*math.exp(-1*(wrgg[i][j][k][1]*fracs[1][j])/T)
+        
+        return Cgg
+    
     noComponents = len(vaporFugacities)
 
     guessFractions = numpy.zeros((2, noComponents))

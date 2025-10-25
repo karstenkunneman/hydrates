@@ -157,7 +157,7 @@ def hydrateDensity(structure, occupancies, compoundData, moleFractions, T, P):
 
 #Hu-Lee-Sum Inhibition Model
 #Yue Hu et al. (2018)
-def HuLeeSum(T, saltConcs, inhibitorConcs, betaGas, freezingPoint):
+def HuLeeSum(T, saltConcs, inhibitorConcs, betaGas, freezingPoint=273.15):
     noSalts = len(saltConcs)
     noInhibitors = len(inhibitorConcs)
     if T >= freezingPoint:
@@ -203,13 +203,6 @@ def HuLeeSum(T, saltConcs, inhibitorConcs, betaGas, freezingPoint):
         Tinhibited = None
     return Tinhibited
 
-def checkMaxConc(inhibitorConcs):
-    exceededInhibitors = ""
-    for i in range(len(inhibitorConcs)):
-        if inhibitorConcs[i] > inhibitorData[i][5]:
-            exceededInhibitors += str(inhibitorData[i][0]) + " "
-    return exceededInhibitors
-
 def betaGas(temperatures, pressures):
     for i in range(len(pressures)):
         pressures[i]
@@ -224,7 +217,7 @@ def betaGas(temperatures, pressures):
     try:
         slope = np.polyfit(inverseTemp, lnPressure, 1)[0]
     
-        betaGas = -10/slope
+        betaGas = -8.314/slope
 
     except:
         betaGas = 0

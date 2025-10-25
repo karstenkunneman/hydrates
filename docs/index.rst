@@ -7,7 +7,9 @@ p2f-hydrates: a Library for the Prediction of Gas Hydrate Equilibrium and Inhibi
 ====================================================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
+   Functions.rst
+   Component and Inhibitor IDs.rst
    Usage Examples.rst
