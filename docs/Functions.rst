@@ -182,17 +182,84 @@ Inputs:
 Returns the freezing point depression of the aqueous phase from the guest gases *as a negative
 number* to be added to 273.15 to obtain the freezing point.
 
-frac(T, vaporFugacities, compoundData, structure, compounds, Ac, Bc, Dc)
-************************************************************************
+deltaHydratePotential
+*********************
+Inputs:
+    *   T
+    *   structure
+    *   vaporFugacities
+    *   compoundData
+    *   compounds
+    *   Ac
+    *   Bc
+    *   Dc
 
-deltaHydratePotential(T, structure, vaporFugacities, compoundData, compounds, Ac, Bc, Dc)
-*****************************************************************************************
+This function returns the difference between the chemical potential of water in the hypothetical 
+and real (filled) hydrate phases (in J/mol) and the fractional occupancy of each cage in the
+generalized structure of [[θsmall_1, θsmall_2, ...], [θlarge_1, θlarge_2, ...]]. This function
+does not search for equilibrium before returning, so should generally only be used if potential
+vs. temperature/pressure or fractional occupancy vs. temperature/pressure is desired. Ac, Bc, and
+Dc inputs are in 3-dimensional lists with dimensions reflecting hydrate structure (I or II), 
+cage (small or large), and guest components.
 
-waterFugacity(T, P, phase, fug_vap, compounds, compoundData)
-************************************************************
 
-hydrateFugacity(T, P, PvapConsts, structure, fug_vap, compounds, compoundData, Ac, Bc, Dc)
-******************************************************************************************
+waterFugacity
+*************
+Inputs:
+    *   T
+    *   P
+    *   phase
+    *   fug_vap
+    *   compounds
+    *   compoundData
+
+Returns the fugacity of the aqueous phase (in Pa) for given conditions, where phase is either "ice"
+or "liquid".
+
+hydrateFugacity
+***************
+Inputs:
+    *   T
+    *   P
+    *   PvapConsts
+    *   structure
+    *   fug_vap
+    *   compounds
+    *   compoundData
+    *   Ac
+    *   Bc
+    *   Dc
+
+Returns the fugacity of the hydrate phase (in Pa) for given conditions; Ac, Bc, and Dc inputs are 
+in 3-dimensional lists with dimensions reflecting hydrate structure (I or II),  cage (small or 
+large), and guest components.
 
 class KlaudaSandler2003
 ************************
+Inputs:
+    *   componentList
+    *   moleFractions
+    *   definedVarible = "T"
+    *   temperature = None
+    *   pressure = None
+
+Properties:
+    *   componentData
+    *   interactionParameters
+    *   componentList
+    *   moleFractions
+    *   definedVarible
+    *   temperature
+    *   pressure
+    *   simResults
+    *   eqStructure
+    *   eqFrac
+    *   equilPhase
+    *   hydrationNumber
+    *   hydrateDensity
+    *   freezingPoint
+
+Main simulation class for this library. If definedVariable is set to "T", temperature is mandatory 
+and pressure is optional, but a guess pressure can be put in. If definedVariable is set to "P", 
+pressure is mandatory and temperature is optional, but a guess temperature can be put in. Usage
+examples are available in Usage Examples.

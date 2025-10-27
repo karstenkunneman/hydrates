@@ -6,7 +6,7 @@ from thermo.unifac import UNIFAC, PSRKSG, PSRKIP
 import ast
 import pandas as pd
 
-R = 8.31446261815324 #m^3 Pa/mol K
+R = 8.31446261815324 #m^3 Pa/mol K = J/mol K
 boltzmannConstant = 1.380649E-23 #m^2 kg/s^2 K
 N_A = 6.02214076E23 #mol^-1
 errorMargin = 1E-5 #Converges to within 1 Pa precision
@@ -58,122 +58,122 @@ def freezingPointDepression(compounds, T, fug_vap, compoundData, P, chemGroups):
     deltadT = R*(273.15)**2/6011*math.log(liqPhaseComposition(compounds, T, fug_vap, compoundData, P)[0]*activityCoeff(T, phaseComposition, chemGroups))
     return deltadT
 
-#Calculates the fractional occupancy of small and large shells by each component
-def frac(T, vaporFugacities, compoundData, structure, compounds, Ac, Bc, Dc):
-    def Lang_Const(T, Ac, Bc, Dc):    
-        Cml = math.exp(Ac + Bc/T + Dc/T/T)
-        
-        return Cml
-
-    def Lang_GG_Const(T, compoundData, fracs, structure):
-        try:
-            I = compoundData[:,7]#eV
-            alpha = compoundData[:,8]#angstrom^3
-        except:
-            I = [compoundData[0][7]]
-            alpha = [compoundData[0][8]]
-            
-        noComponents = len(I)    
-            
-        Cgg = [[1,1] for i in range(noComponents)]
-        
-        C6 = numpy.zeros((noComponents,noComponents))
-        C8 = numpy.zeros((noComponents,noComponents))
-        C10 = numpy.zeros((noComponents,noComponents))
-                
-        #Dispersion Coefficients for each guest-guest interaction
-        for i in range(noComponents):
-            for j in range(noComponents):
-                C6[i][j] = (3/2)*alpha[i]*alpha[j]*I[i]*I[j]/(I[i]+I[j])*23.05/.001987
-                C8[i][j] = 496778.3824*alpha[i]*alpha[j]*(I[i]/(2*I[i]+I[j])+I[j]/(2*I[j]+I[i]))
-                C10[i][j] = 13260598.42*alpha[i]*alpha[j]/(I[i]+I[j])
-        
-        wrgg = [[[[0,0],[0,0]] for i in range(noComponents)] for i in range(noComponents)]
-        
-        #Unsure exactly what these are relative to r, just dont touch it if you want to stay sane.
-        if structure == "I":
-            a_lc = 12.03
-            for i in range(noComponents):
-                for j in range(noComponents):
-                    r0 = a_lc*0.86602
-                    wrgg[i][j][0][0] = -1*C6[i][j]*12.25367/(r0**6)-C8[i][j]*10.3552/(r0**8)-C10[i][j]*9.5644/(r0**10)
-                    r1 = a_lc*0.55901
-                    wrgg[i][j][0][1] = -1*C6[i][j]*13.41525/(r1**6)-C8[i][j]*12.38994/(r1**8)-C10[i][j]*12.12665/(r1**10)
-                    
-                    r0 = a_lc*0.55901
-                    wrgg[i][j][1][0] = -1*C6[i][j]*4.47175/(r0**6)-C8[i][j]*4.12998/(r0**8)-C10[i][j]*4.02482/(r0**10)
-                    r1 = a_lc*0.5
-                    wrgg[i][j][1][1] = -1*C6[i][j]*5.14048/(r1**6)-C8[i][j]*3.74916/(r1**8)-C10[i][j]*3.09581/(r1**10)
-        elif structure == "II":
-            a_lc = 17.31
-            for i in range(noComponents):
-                for j in range(noComponents):
-                    r0 = a_lc*0.35355
-                    wrgg[i][j][0][0] = -1*C6[i][j]*6.92768/(r0**6)-C8[i][j]*6.23392/(r0**8)-C10[i][j]*6.06724/(r0**10)
-                    r1 = a_lc*0.41457
-                    wrgg[i][j][0][1] = -1*C6[i][j]*6.91143/(r1**6)-C8[i][j]*6.28271/(r1**8)-C10[i][j]*6.10214/(r1**10)
-                    
-                    r0 = a_lc*0.41457
-                    wrgg[i][j][1][0] = -1*C6[i][j]*13.82287/(r0**6)-C8[i][j]*12.56542/(r0**8)-C10[i][j]*12.20428/(r0**10)
-                    r1 = a_lc*0.43301
-                    wrgg[i][j][1][1] = -1*C6[i][j]*5.11677/(r1**6)-C8[i][j]*4.33181/(r1**8)-C10[i][j]*4.11102/(r1**10)
-        
-        #Obtain the interaction energy of guests
-        for i in range(noComponents):
-            for j in range(noComponents):
-                for k in range(2):
-                    Cgg[i][k] *= math.exp(-1*(wrgg[i][j][k][0]*fracs[0][j])/T)*math.exp(-1*(wrgg[i][j][k][1]*fracs[1][j])/T)
-        
-        return Cgg
-    
-    noComponents = len(vaporFugacities)
-
-    guessFractions = numpy.zeros((2, noComponents))
-    oldGuessFractions = [[1 for i in range(noComponents)],[1 for i in range(noComponents)]]
-    Cgg = [[1.5, 1.5] for i in range(noComponents)]
-    langConsts = [[0, 0] for i in range(noComponents)]
-    fracDiff = [[1 for i in range(noComponents)],[1 for i in range(noComponents)]]
-
-    if structure == "I":
-        structureIndex = 0
-    else:
-        structureIndex = 1
-    
-    #Iterate over shell occupancy until the average fractional occupancy of all shells does not change by a factor greater than the error margin
-    while abs(sum(fracDiff[0])/noComponents+sum(fracDiff[1])/noComponents)/2 >= errorMargin: #average fractional occupancy difference of all shells
-        fracDiff = numpy.zeros((2, noComponents))
-        for i in range(2):
-            denominator = 0
-            
-            for j in range(noComponents):
-                langConsts[j][i] = Lang_Const(T, Ac[structureIndex][i][j], Bc[structureIndex][i][j], Dc[structureIndex][i][j])*math.sqrt(1-fracDiff[i][j])
-                denominator += Cgg[j][i]*langConsts[j][i]*vaporFugacities[j]        
-            
-            #Determine the difference in fractional occupancy between the previous guess fraction and the new guess fraction for each component
-            for j in range(noComponents):
-                guessFractions[i][j] = Cgg[j][i]*langConsts[j][i]*vaporFugacities[j]/(1 + denominator)
-                fracDiff[i][j] = abs(guessFractions[i][j]/oldGuessFractions[i][j]-1)/noComponents
-                oldGuessFractions[i][j]=guessFractions[i][j]
-            
-        #Guess a new guest-weighted Langmuir constant with new guess Fractions
-        Cgg = Lang_GG_Const(T, compoundData, guessFractions, structure)
-
-    for i in range(2):
-        for j in range(noComponents):
-            if guessFractions[i][j] < 1E-10:
-                guessFractions[i][j] = 0
-        
-    return guessFractions
-
 def deltaHydratePotential(T, structure, vaporFugacities, compoundData, compounds, Ac, Bc, Dc):
     cellProperties = getHydrateCellProperties(structure) 
     fractions = 0
     Deltamu_H_w = 0
 
+    #Calculates the fractional occupancy of small and large shells by each component
+    def frac(T, vaporFugacities, compoundData, structure, compounds, Ac, Bc, Dc):
+        def Lang_Const(T, Ac, Bc, Dc):    
+            Cml = math.exp(Ac + Bc/T + Dc/T/T)
+            
+            return Cml
+
+        def Lang_GG_Const(T, compoundData, fracs, structure):
+            try:
+                I = compoundData[:,7]#eV
+                alpha = compoundData[:,8]#angstrom^3
+            except:
+                I = [compoundData[0][7]]
+                alpha = [compoundData[0][8]]
+                
+            noComponents = len(I)    
+                
+            Cgg = [[1,1] for i in range(noComponents)]
+            
+            C6 = numpy.zeros((noComponents,noComponents))
+            C8 = numpy.zeros((noComponents,noComponents))
+            C10 = numpy.zeros((noComponents,noComponents))
+                    
+            #Dispersion Coefficients for each guest-guest interaction
+            for i in range(noComponents):
+                for j in range(noComponents):
+                    C6[i][j] = (3/2)*alpha[i]*alpha[j]*I[i]*I[j]/(I[i]+I[j])*23.05/.001987
+                    C8[i][j] = 496778.3824*alpha[i]*alpha[j]*(I[i]/(2*I[i]+I[j])+I[j]/(2*I[j]+I[i]))
+                    C10[i][j] = 13260598.42*alpha[i]*alpha[j]/(I[i]+I[j])
+            
+            wrgg = [[[[0,0],[0,0]] for i in range(noComponents)] for i in range(noComponents)]
+            
+            #Unsure exactly what these are relative to r, just dont touch it if you want to stay sane.
+            if structure == "I":
+                a_lc = 12.03
+                for i in range(noComponents):
+                    for j in range(noComponents):
+                        r0 = a_lc*0.86602
+                        wrgg[i][j][0][0] = -1*C6[i][j]*12.25367/(r0**6)-C8[i][j]*10.3552/(r0**8)-C10[i][j]*9.5644/(r0**10)
+                        r1 = a_lc*0.55901
+                        wrgg[i][j][0][1] = -1*C6[i][j]*13.41525/(r1**6)-C8[i][j]*12.38994/(r1**8)-C10[i][j]*12.12665/(r1**10)
+                        
+                        r0 = a_lc*0.55901
+                        wrgg[i][j][1][0] = -1*C6[i][j]*4.47175/(r0**6)-C8[i][j]*4.12998/(r0**8)-C10[i][j]*4.02482/(r0**10)
+                        r1 = a_lc*0.5
+                        wrgg[i][j][1][1] = -1*C6[i][j]*5.14048/(r1**6)-C8[i][j]*3.74916/(r1**8)-C10[i][j]*3.09581/(r1**10)
+            elif structure == "II":
+                a_lc = 17.31
+                for i in range(noComponents):
+                    for j in range(noComponents):
+                        r0 = a_lc*0.35355
+                        wrgg[i][j][0][0] = -1*C6[i][j]*6.92768/(r0**6)-C8[i][j]*6.23392/(r0**8)-C10[i][j]*6.06724/(r0**10)
+                        r1 = a_lc*0.41457
+                        wrgg[i][j][0][1] = -1*C6[i][j]*6.91143/(r1**6)-C8[i][j]*6.28271/(r1**8)-C10[i][j]*6.10214/(r1**10)
+                        
+                        r0 = a_lc*0.41457
+                        wrgg[i][j][1][0] = -1*C6[i][j]*13.82287/(r0**6)-C8[i][j]*12.56542/(r0**8)-C10[i][j]*12.20428/(r0**10)
+                        r1 = a_lc*0.43301
+                        wrgg[i][j][1][1] = -1*C6[i][j]*5.11677/(r1**6)-C8[i][j]*4.33181/(r1**8)-C10[i][j]*4.11102/(r1**10)
+            
+            #Obtain the interaction energy of guests
+            for i in range(noComponents):
+                for j in range(noComponents):
+                    for k in range(2):
+                        Cgg[i][k] *= math.exp(-1*(wrgg[i][j][k][0]*fracs[0][j])/T)*math.exp(-1*(wrgg[i][j][k][1]*fracs[1][j])/T)
+            
+            return Cgg
+        
+        noComponents = len(vaporFugacities)
+
+        guessFractions = numpy.zeros((2, noComponents))
+        oldGuessFractions = [[1 for i in range(noComponents)],[1 for i in range(noComponents)]]
+        Cgg = [[1.5, 1.5] for i in range(noComponents)]
+        langConsts = [[0, 0] for i in range(noComponents)]
+        fracDiff = [[1 for i in range(noComponents)],[1 for i in range(noComponents)]]
+
+        if structure == "I":
+            structureIndex = 0
+        else:
+            structureIndex = 1
+        
+        #Iterate over shell occupancy until the average fractional occupancy of all shells does not change by a factor greater than the error margin
+        while abs(sum(fracDiff[0])/noComponents+sum(fracDiff[1])/noComponents)/2 >= errorMargin: #average fractional occupancy difference of all shells
+            fracDiff = numpy.zeros((2, noComponents))
+            for i in range(2):
+                denominator = 0
+                
+                for j in range(noComponents):
+                    langConsts[j][i] = Lang_Const(T, Ac[structureIndex][i][j], Bc[structureIndex][i][j], Dc[structureIndex][i][j])*math.sqrt(1-fracDiff[i][j])
+                    denominator += Cgg[j][i]*langConsts[j][i]*vaporFugacities[j]        
+                
+                #Determine the difference in fractional occupancy between the previous guess fraction and the new guess fraction for each component
+                for j in range(noComponents):
+                    guessFractions[i][j] = Cgg[j][i]*langConsts[j][i]*vaporFugacities[j]/(1 + denominator)
+                    fracDiff[i][j] = abs(guessFractions[i][j]/oldGuessFractions[i][j]-1)/noComponents
+                    oldGuessFractions[i][j]=guessFractions[i][j]
+                
+            #Guess a new guest-weighted Langmuir constant with new guess Fractions
+            Cgg = Lang_GG_Const(T, compoundData, guessFractions, structure)
+
+        for i in range(2):
+            for j in range(noComponents):
+                if guessFractions[i][j] < 1E-10:
+                    guessFractions[i][j] = 0
+            
+        return guessFractions
+
     fractions = frac(T, vaporFugacities, compoundData, structure, compounds, Ac, Bc, Dc)
     
-    Deltamu_H_w += cellProperties[0][10]*math.log(1-sum(fractions[0]))
-    Deltamu_H_w += cellProperties[1][10]*math.log(1-sum(fractions[1]))
+    Deltamu_H_w += R*T*cellProperties[0][10]*math.log(1-sum(fractions[0]))
+    Deltamu_H_w += R*T*cellProperties[1][10]*math.log(1-sum(fractions[1]))
     return Deltamu_H_w, fractions
 
 def waterFugacity(T, P, phase, fug_vap, compounds, compoundData):
@@ -227,7 +227,7 @@ def hydrateFugacity(T, P, PvapConsts, structure, fug_vap, compounds, compoundDat
     
     Psat_water = math.exp(A*math.log(T)+B/T+2.7789+D*T)
     
-    f_h = Psat_water*math.exp(Vm_water*(P-Psat_water)/(R*T))*math.exp(dH[0])
+    f_h = Psat_water*math.exp(Vm_water*(P-Psat_water)/(R*T))*math.exp(dH[0]/R/T)
     return f_h,frac
 
 #J. B. Klauda, S. I. Sandler, Phase behavior of clathrate hydrates:
@@ -324,23 +324,23 @@ class KlaudaSandler2003:
             try:
                 if "I" in localPvapConsts[:,0]:
                     SIEqPressure = abs(scipy.optimize.fsolve(f_defT,pGuess,xtol=errorMargin,args=self.temperature)[0])
-                    SIEqFrac = hydrateFugacity(self.temperature, SIEqPressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, self.temperature, SIEqPressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
+                    SIeqFrac = hydrateFugacity(self.temperature, SIEqPressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, self.temperature, SIEqPressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
                 else:
                     raise
             except:
                 SIEqPressure = math.inf
-                SIEqFrac = numpy.zeros((2,len(self.moleFractions)))
+                SIeqFrac = numpy.zeros((2,len(self.moleFractions)))
         elif self.definedVariable == "P":
             tGuess = self.temperature
             try:
                 if "I" in localPvapConsts[:,0]:
                     SIEqTemperature = abs(scipy.optimize.fsolve(f_defP,tGuess,xtol=errorMargin,args=self.pressure)[0])
-                    SIEqFrac = hydrateFugacity(SIEqTemperature, self.pressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, SIEqTemperature, self.pressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
+                    SIeqFrac = hydrateFugacity(SIEqTemperature, self.pressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, SIEqTemperature, self.pressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
                 else:
                     raise
             except:
                 SIEqTemperature = 0
-                SIEqFrac = numpy.zeros((2,noCompounds))
+                SIeqFrac = numpy.zeros((2,noCompounds))
         
         structure = "II"
 
@@ -378,19 +378,19 @@ class KlaudaSandler2003:
             try:
                 if "II" in localPvapConsts[:,0]:
                     SIIEqPressure = abs(scipy.optimize.fsolve(f_defT,pGuess,xtol=errorMargin,args=self.temperature)[0])
-                    SIIEqFrac = hydrateFugacity(self.temperature, SIEqPressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, self.temperature, SIEqPressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
+                    SIIeqFrac = hydrateFugacity(self.temperature, SIEqPressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, self.temperature, SIEqPressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
                 else:
                     raise
             except:
                 SIIEqPressure = math.inf
-                SIIEqFrac = numpy.zeros((2,len(self.moleFractions)))
+                SIIeqFrac = numpy.zeros((2,len(self.moleFractions)))
                 
             if SIIEqPressure >= SIEqPressure:
                 self.eqStructure = "I"
-                self.EqFrac = SIEqFrac
+                self.eqFrac = SIeqFrac
             else:
                 self.eqStructure = "II"
-                self.EqFrac = SIIEqFrac
+                self.eqFrac = SIIeqFrac
             self.pressure = min(SIEqPressure, SIIEqPressure)
             
         elif self.definedVariable == "P":
@@ -398,19 +398,19 @@ class KlaudaSandler2003:
             try:
                 if "II" in localPvapConsts[:,0]:
                     SIIEqTemperature = abs(scipy.optimize.fsolve(f_defP,tGuess,xtol=errorMargin,args=self.pressure)[0])
-                    SIIEqFrac = hydrateFugacity(SIEqTemperature, self.pressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, SIEqTemperature, self.pressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
+                    SIIeqFrac = hydrateFugacity(SIEqTemperature, self.pressure, localPvapConsts, structure, core.PRSV(self.componentData, self.moleFractions, SIEqTemperature, self.pressure, self.interactionParameters)[2], self.componentList, self.componentData, Ac, Bc, Dc)[1]
                 else:
                     raise
             except:
                 SIIEqTemperature = 0
-                SIIEqFrac = numpy.zeros((2,noCompounds))
+                SIIeqFrac = numpy.zeros((2,noCompounds))
         
             if SIIEqTemperature <= SIEqTemperature and SIEqTemperature != math.inf:
                 self.eqStructure = "I"
-                self.EqFrac = SIEqFrac
+                self.eqFrac = SIeqFrac
             else:
                 self.eqStructure = "II"
-                self.EqFrac = SIIEqFrac
+                self.eqFrac = SIIeqFrac
         
             if SIEqTemperature != math.inf and SIIEqTemperature != math.inf:
                 self.temperature = max(SIEqTemperature, SIIEqTemperature)
@@ -424,8 +424,8 @@ class KlaudaSandler2003:
         else:
             self.equilPhase = "L-H-V"
             
-        self.hydrationNumber = core.hydrationNumber(self.eqStructure, self.EqFrac)
-        self.hydrateDensity = core.hydrateDensity(self.eqStructure, self.EqFrac, self.componentData, self.moleFractions, self.temperature, self.pressure)
+        self.hydrationNumber = core.hydrationNumber(self.eqStructure, self.eqFrac)
+        self.hydrateDensity = core.hydrateDensity(self.eqStructure, self.eqFrac, self.componentData, self.moleFractions, self.temperature, self.pressure)
         self.freezingPoint = freezingPoint
 
         return 0

@@ -11,3 +11,9 @@ assert round(model.KlaudaSandler2003([3], [1], "P", None, 2E5).temperature, 1) =
 
 #3-Component P-Defined Fresh Water
 assert round(model.KlaudaSandler2003([1,2,3], [0.9196,0.0513,0.0291], "P", None, 10.7E5).temperature, 1) == 275.8 #K
+
+print(model.KlaudaSandler2003([4], [1], "T", 237.2, None).pressure/1E6)
+print(model.KlaudaSandler2003([4], [1], "T", 237.2, None).eqStructure)
+
+print(model.KlaudaSandler2003([4], [1], "T", 261.13, None).pressure/1E6)
+print(model.KlaudaSandler2003([4], [1], "T", 261.13, None).eqStructure)

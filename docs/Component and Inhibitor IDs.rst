@@ -1,5 +1,3 @@
-.. _Component and Inhibitor IDs
-
 Component and Inhibitor IDs
 ====================================================================================
 
