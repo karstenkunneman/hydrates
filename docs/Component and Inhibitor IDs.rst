@@ -10,15 +10,13 @@ The IDs for guest components are as follows:
     * 1 - CH4
     * 2 - C2H6
     * 3 - C3H8
-    * 4 - c-C3H6
-    * 5 - n-C4H10
-    * 6 - i-C4H10
-    * 7 - C5H12
-    * 8 - C6H14
-    * 9 - CO2
-    * 10 - H2S
-    * 11 - N2
-    * 12 - O2
+    * 4 - i-C4H10
+    * 5 - C5H12
+    * 6 - C6H14
+    * 7 - CO2
+    * 8 - H2S
+    * 9 - N2
+    * 10 - O2
 
 The index ordering for salts is as follows:
 
