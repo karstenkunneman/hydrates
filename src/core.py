@@ -2,15 +2,16 @@ import math
 import pandas as pd
 import numpy as np
 import scipy
+import os
 
 R = 8.31446261815324 #m^3 Pa/mol K
 boltzmannConstant = 1.380649E-23 #m^2 kg/s^2 K
 N_A = 6.02214076E23 #mol^-1
 
-fluidData = pd.read_csv('componentData.csv', encoding='utf-8-sig').to_numpy()
-interactionParameters = pd.read_csv('interactionParameters.csv', encoding='utf-8-sig').to_numpy()
-saltData = pd.read_csv('Salt Data.csv', encoding='utf-8-sig').to_numpy()
-inhibitorData = pd.read_csv('Organic Inhibitor Data.csv', encoding='utf-8-sig').to_numpy()
+fluidData = pd.read_csv(os.path.join(os.path.dirname(__file__),'componentData.csv'), encoding='utf-8-sig').to_numpy()
+interactionParameters = pd.read_csv(os.path.join(os.path.dirname(__file__),'interactionParameters.csv'), encoding='utf-8-sig').to_numpy()
+saltData = pd.read_csv(os.path.join(os.path.dirname(__file__),'Salt Data.csv'), encoding='utf-8-sig').to_numpy()
+inhibitorData = pd.read_csv(os.path.join(os.path.dirname(__file__),'Organic Inhibitor Data.csv'), encoding='utf-8-sig').to_numpy()
 
 #Obtain component data for given components present in the simulated system
 def getComponentData(componentList):
@@ -140,7 +141,7 @@ def hydrateDensity(structure, occupancies, compoundData, moleFractions, T, P):
     
     molarmass = np.zeros(noCompounds)
     for i in range(noCompounds):
-        molarmass[i] = compoundData[i][10]/1000
+        molarmass[i] = compoundData[i][9]/1000
     
     if structure == "I":
         Vm_water = (11.835+2.217E-5*T+2.242E-6*T**2)**3*(1E-30*N_A/46)-8.006E-9*P/1E6+5.448E-12*(P/1E6)**2 #m3/mol
@@ -153,7 +154,7 @@ def hydrateDensity(structure, occupancies, compoundData, moleFractions, T, P):
         for i in range(noCompounds):
             guestMass += (molarmass[i]*occupancies[0][i]*16 + molarmass[i]*occupancies[1][i]*8)/Vm_water/136
             
-    return waterMass + guestMass, 1
+    return waterMass + guestMass, guestMass
 
 #Hu-Lee-Sum Inhibition Model
 #Yue Hu et al. (2018)

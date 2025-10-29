@@ -1,20 +1,21 @@
-import core
+from . import core
 import math
 import scipy
 import numpy
 from thermo.unifac import UNIFAC, PSRKSG, PSRKIP
 import ast
 import pandas as pd
+import os
 
 R = 8.31446261815324 #m^3 Pa/mol K = J/mol K
 boltzmannConstant = 1.380649E-23 #m^2 kg/s^2 K
 N_A = 6.02214076E23 #mol^-1
 errorMargin = 1E-5 #Converges to within 1 Pa precision
 
-langParameters = pd.read_csv('KlaudaSandlerLangParams.csv', encoding='utf-8-sig').to_numpy()
-PvapConsts = pd.read_csv('KlaudaSandlerP_vap.csv', encoding='utf-8-sig').to_numpy()
+langParameters = pd.read_csv(os.path.join(os.path.dirname(__file__),'KlaudaSandlerLangParams.csv'), encoding='utf-8-sig').to_numpy()
+PvapConsts = pd.read_csv(os.path.join(os.path.dirname(__file__),'KlaudaSandlerP_vap.csv'), encoding='utf-8-sig').to_numpy()
 
-hydrateCellProperties = pd.read_csv('hydrateCellProperties.csv', encoding='utf-8-sig').to_numpy()
+hydrateCellProperties = pd.read_csv(os.path.join(os.path.dirname(__file__),'hydrateCellProperties.csv'), encoding='utf-8-sig').to_numpy()
 def getHydrateCellProperties(structure):
     mask = hydrateCellProperties[:, 0] == structure
     cellProperties = hydrateCellProperties[mask]
@@ -420,9 +421,9 @@ class KlaudaSandler2003:
                 self.temperature = SIEqTemperature
 
         if waterPhase == "ice":
-            self.equilPhase = "I-H-V"
+            self.eqPhase = "I-H-V"
         else:
-            self.equilPhase = "L-H-V"
+            self.eqPhase = "L-H-V"
             
         self.hydrationNumber = core.hydrationNumber(self.eqStructure, self.eqFrac)
         self.hydrateDensity = core.hydrateDensity(self.eqStructure, self.eqFrac, self.componentData, self.moleFractions, self.temperature, self.pressure)

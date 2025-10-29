@@ -77,8 +77,8 @@ Inputs:
     *   T
     *   P
   
-To obtain an estimation of the density of a hydrate system (in kg/m^3), this function is employed
-using the same conventions as previously mentioned.
+To obtain an estimation of the density of a hydrate system and the "density" of the gases stored
+inside (in kg/m^3), this function is employed using the same conventions as previously mentioned.
 
 HuLeeSum
 ********

@@ -13,3 +13,19 @@ p2f-hydrates: a Library for the Prediction of Gas Hydrate Equilibrium and Inhibi
    Functions.rst
    Component and Inhibitor IDs.rst
    Usage Examples.rst
+
+Installation
+#############
+Get the latest version of p2f-hydrates from https://pypi.python.org/pypi/p2f-hydrates/
+
+If you have an installation of Python with pip, simple install it with:
+
+$ pip install p2f-hydrates
+
+To get the git version, run:
+
+$ git clone git://github.com/karstenkunneman/p2f-hydrates.git
+
+The latest development version of p2f-hydrates’ source can be obtained at
+
+https://github.com/karstenkunneman/p2f-hydrates
