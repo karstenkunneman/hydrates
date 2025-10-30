@@ -19,4 +19,4 @@ For Questions, Suggestions, or Bug Reports, please contact Prof. Amadeu K. Sum: 
 
 Disclaimer: The model and predictions have been tested and verified to be accurate based on extensive comparison with available literature data. However, this web app is provided "as is" and "as available" without any warranties of any kind, either express or implied, including, but not limited to, implied warranties of use, merchantability, fitness for a particular purpose, and non-infringement.
 
-©2025, All Rights Reserved Full source code available at https://github.com/karstenkunneman/p2f-hydrates This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/.
+©2025, All Rights Reserved Full source code available at https://github.com/karstenkunneman/hydrates This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/.

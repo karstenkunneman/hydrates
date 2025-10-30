@@ -3,22 +3,30 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "P2F-HYDRATES"
-version = "0.1.0"
+name = "hydrates"
+version = "0.1.0.0"
 authors = [
   {name="Karsten Kunneman", email="karstenkunneman@protonmail.com"},
   {name="Amadeu K. Sum", email="asum@mines.edu"},
 ]
 description = "A package providing functionality for the simulation of equilibrium and inhibition of clathrate hydrates"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
-license = "Attribution-ShareAlike 4.0 International"
-license-files = "LICENSE.txt"
+license = "CC-BY-SA-4.0"
+license-files = ["LICENSE",]
+
+dependencies = [
+"numpy==1.21.0",
+"matplotlib",
+"thermo"]
 
 [project.urls]
-Homepage = ""
-Issues = ""
+Homepage = "https://github.com/karstenkunneman/hydrates"
+Issues = "https://github.com/karstenkunneman/hydrates/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hydrates"]

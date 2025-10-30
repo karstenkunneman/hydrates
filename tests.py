@@ -1,4 +1,4 @@
-import model
+from src import model
 
 #1-Component T-Defined Fresh Water
 assert round(model.KlaudaSandler2003([1], [1], "T", 280, None).pressure/1E5, 1) == 51.5 #bar

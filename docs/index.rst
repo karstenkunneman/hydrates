@@ -1,9 +1,4 @@
-.. p2f-hydrates documentation master file, created by
-   sphinx-quickstart on Wed Sep 17 21:06:22 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-p2f-hydrates: a Library for the Prediction of Gas Hydrate Equilibrium and Inhibition
+hydrates: a Library for the Prediction of Gas Hydrate Equilibrium and Inhibition
 ====================================================================================
 
 .. toctree::
@@ -13,19 +8,20 @@ p2f-hydrates: a Library for the Prediction of Gas Hydrate Equilibrium and Inhibi
    Functions.rst
    Component and Inhibitor IDs.rst
    Usage Examples.rst
+   Example Project.rst
 
 Installation
 #############
-Get the latest version of p2f-hydrates from https://pypi.python.org/pypi/p2f-hydrates/
+Get the latest version of hydrates from https://pypi.python.org/pypi/hydrates/
 
 If you have an installation of Python with pip, simple install it with:
 
-$ pip install p2f-hydrates
+$ pip install hydrates
 
 To get the git version, run:
 
-$ git clone git://github.com/karstenkunneman/p2f-hydrates.git
+$ git clone git://github.com/karstenkunneman/hydrates.git
 
-The latest development version of p2f-hydrates’ source can be obtained at
+The latest development version of hydrates’ source can be obtained at
 
-https://github.com/karstenkunneman/p2f-hydrates
+https://github.com/karstenkunneman/-hydrates
