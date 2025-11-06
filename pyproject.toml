@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "p2f_hydrates"
-version = "0.1.0.0"
+version = "0.1.0.1"
 authors = [
   {name="Karsten Kunneman", email="karstenkunneman@protonmail.com"},
   {name="Amadeu K. Sum", email="asum@mines.edu"},
