@@ -6,8 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'hydrates'
-copyright = '2025, Karsten Kunneman'
+project = 'p2f_hydrates'
+copyright = '2025, Phases to Flow Laboratory'
 author = 'Karsten Kunneman'
 release = '0.1.0.0'
 

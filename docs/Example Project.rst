@@ -1,14 +1,14 @@
 Example Project
 ====================================================================================
 
-The following is a very basic starter project to show the basic use of the hydrates
+The following is a very basic starter project to show the basic use of the p2f_hydrates
 library:
 
 .. code-block:: python
 
     import matplotlib.pyplot as plt
-    import hydrates.core as core
-    import hydrates.model as model
+    import p2f_hydrates.core as core
+    import p2f_hydrates.model as model
 
     #Define simulation conditions
     components = [1,2]

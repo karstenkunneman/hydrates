@@ -1,4 +1,4 @@
-hydrates: a Library for the Prediction of Gas Hydrate Equilibrium and Inhibition
+p2f_hydrates: a Library for the Prediction of Gas Hydrate Equilibrium and Inhibition
 ====================================================================================
 
 .. toctree::
@@ -12,7 +12,7 @@ hydrates: a Library for the Prediction of Gas Hydrate Equilibrium and Inhibition
 
 Installation
 #############
-Get the latest version of hydrates from https://pypi.python.org/pypi/hydrates/
+Get the latest version of hydrates from https://pypi.python.org/pypi/p2f_hydrates/
 
 If you have an installation of Python with pip, simple install it with:
 
@@ -20,8 +20,8 @@ $ pip install hydrates
 
 To get the git version, run:
 
-$ git clone git://github.com/karstenkunneman/hydrates.git
+$ git clone git://github.com/karstenkunneman/p2f_hydrates.git
 
-The latest development version of hydrates’ source can be obtained at
+The latest development version of p2f_hydrates’ source can be obtained at
 
-https://github.com/karstenkunneman/-hydrates
+https://github.com/karstenkunneman/p2f_hydrates

@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "hydrates"
+name = "p2f_hydrates"
 version = "0.1.0.0"
 authors = [
   {name="Karsten Kunneman", email="karstenkunneman@protonmail.com"},
@@ -21,12 +21,12 @@ license-files = ["LICENSE",]
 
 dependencies = [
 "numpy==1.21.0",
-"matplotlib",
-"thermo"]
+"matplotlib==3.7.5",
+"thermo==0.4.1"]
 
 [project.urls]
-Homepage = "https://github.com/karstenkunneman/hydrates"
-Issues = "https://github.com/karstenkunneman/hydrates/issues"
+Homepage = "https://github.com/karstenkunneman/p2f_hydrates"
+Issues = "https://github.com/karstenkunneman/p2f_hydrates/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/hydrates"]
+packages = ["src/p2f_hydrates"]
