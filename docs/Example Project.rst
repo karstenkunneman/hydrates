@@ -7,8 +7,8 @@ library:
 .. code-block:: python
 
     import matplotlib.pyplot as plt
-    import p2f_hydrates.core as core
-    import p2f_hydrates.model as model
+    import p2f_HydrateCalcLib.core as core
+    import p2f_HydrateCalcLib.model as model
 
     #Define simulation conditions
     components = [1,2]

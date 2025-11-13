@@ -6,10 +6,10 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'p2f_hydrates'
+project = 'p2f_HydrateCalcLib'
 copyright = '2025, Phases to Flow Laboratory'
 author = 'Karsten Kunneman'
-release = '0.1.0.1'
+release = '0.1.0.3'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
