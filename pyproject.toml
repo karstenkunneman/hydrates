@@ -9,7 +9,7 @@ authors = [
   {name="Karsten Kunneman", email="karstenkunneman@protonmail.com"},
   {name="Amadeu K. Sum", email="asum@mines.edu"},
 ]
-description = "A package providing functionality for the simulation of equilibrium and inhibition of clathrate hydrates"
+description = "A package providing functionality for the simulation of equilibrium and inhibition of gas hydrates"
 readme = "README.md"
 requires-python = "<=3.9"
 classifiers = [
