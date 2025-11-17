@@ -10,9 +10,10 @@ This tool is based primarily on the following models:
 
 - Phase behavior of clathrate hydrates: a model for single and multiple gas component hydrates by J. B. Klauda and S. I. Sandler [doi: 10.1021/ie000322b]
 - Universal correlation for gas hydrates suppression temperature of inhibited systems: III. salts and organic inhibitors by Y. Hu, J.-H. Sa, B. R. Lee, and A. K. Sum [doi: 10.1002/aic.16369]
+
 For Questions, Suggestions, or Bug Reports, please contact Prof. Amadeu K. Sum: asum@mines.edu
 
-To cite this library, please cite:
+To cite this library, use:
 p2f-hydratecalc: A web Python-based tool for the prediction of natural gas hydrate equilibrium and inhibition by Karsten Kunneman and Amadeu K. Sum [doi: 10.1016/j.softx.2025.102422]
 
 For Questions, Suggestions, or Bug Reports, please contact Prof. Amadeu K. Sum: asum@mines.edu

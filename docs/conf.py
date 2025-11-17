@@ -9,7 +9,7 @@
 project = 'p2f_HydrateCalcLib'
 copyright = '2025, Phases to Flow Laboratory'
 author = 'Karsten Kunneman'
-release = '0.1.0.5'
+release = '0.1.0.6'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
